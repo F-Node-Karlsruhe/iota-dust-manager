@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='iota-dust-manager',
-    version='0.1.0',    
+    version='0.1.1',    
     description='A python package that manages your receiving dust addresses',
     url='https://github.com/F-Node-Karlsruhe/iota-dust-manager',
     author='F-Node-Karlsruhe',
