@@ -103,11 +103,13 @@ class DustManager:
 
         self._swipe_threshold = swipe_threshold
 
-        self.__check_dust_enabled()
+        if not self.__check_dust_allowance():
+
+            self.__refresh_dust()
 
 
 
-    def __check_dust_enabled(self):
+    def __check_dust_active(self):
 
         with self._check_lock:
 
@@ -119,6 +121,18 @@ class DustManager:
                 return
 
             self.__refresh_dust()
+
+
+    def __check_dust_allowance(self) -> bool:
+
+        address_balance_pair = self._client.get_address_balances([self._dust_address])[0]
+
+        if address_balance_pair['dust_allowed']:
+
+            return True
+
+        return False
+
 
 
     def __refresh_dust(self) -> None:
@@ -174,7 +188,7 @@ class DustManager:
         
         if for_transaction:
 
-            threading.Thread(target=self.__check_dust_enabled).start()
+            threading.Thread(target=self.__check_dust_active).start()
 
         return self._dust_address
 
