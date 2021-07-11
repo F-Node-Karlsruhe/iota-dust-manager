@@ -94,7 +94,7 @@ class DustManager:
 
         self._working_balance = IOTA_PER_DUST_TRANSACTION * self._number_of_dust_transactions
 
-        self._dust_counter = _DustTransactionCounter(self._number_of_dust_transactions)
+        self._dust_counter = self._number_of_dust_transactions
 
         if self._swipe_address is None:
 
@@ -104,16 +104,18 @@ class DustManager:
 
         self._first_round = True
 
-        self.__check_dust_enabled(init=True)
+        self.__check_dust_enabled()
 
 
 
-    def __check_dust_enabled(self, init=False):
+    def __check_dust_enabled(self):
 
         with self._check_lock:
+
+            self._dust_counter -= 1
             
             # rather be one too early than one too late
-            if self._dust_counter.get() > 1:
+            if self._dust_counter > 1:
 
                 # only check dust allowance directly in first round
                 if self._first_round:
@@ -170,7 +172,7 @@ class DustManager:
         self._client.retry_until_included(message_id = message['message_id'])
         
         # reset counter
-        self._dust_counter.set(self._number_of_dust_transactions)
+        self._dust_counter = self._number_of_dust_transactions
 
         self._first_round = False
 
@@ -184,8 +186,6 @@ class DustManager:
         """
         
         if for_transaction:
-
-            self._dust_counter.dec()
 
             threading.Thread(target=self.__check_dust_enabled).start()
 
@@ -207,34 +207,3 @@ class DustManager:
         }
         self._client.message(seed=self._seed, outputs=[output])
 
-
-
-
-
-class _DustTransactionCounter:
-    """
-    An atomic, thread-safe counter.
-    """
-    def __init__(self, initial=10):
-        """Initialize a new atomic counter to given initial value (default 10)."""
-        self.value = initial
-        self._lock = threading.Lock()
-
-    def set(self, value):
-        """set counter to value.
-        """
-        with self._lock:
-            self.value = value
-
-    def dec(self):
-        """decrement the counter by 1.
-        """
-        with self._lock:
-            self.value -= 1
-
-    def get(self):
-        """Get value
-        """
-        with self._lock:
-            return self.value
-            
