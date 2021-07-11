@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='iota-dust-manager',
     version='0.1.3',    
-    description='A python package that manages your receiving dust addresses',
+    description='A thread safe, stateless python package that manages your receiving dust address',
     url='https://github.com/F-Node-Karlsruhe/iota-dust-manager',
     author='F-Node-Karlsruhe',
     author_email='contact@f-node.de',
