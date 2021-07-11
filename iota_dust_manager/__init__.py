@@ -4,7 +4,7 @@ iota-dust-manager
 A thread safe python package that manages your receiving dust addresses.
 """
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __author__ = 'F-Node-Karlsruhe'
 
 
