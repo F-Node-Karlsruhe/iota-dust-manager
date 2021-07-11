@@ -8,7 +8,7 @@ setup(
     author='F-Node-Karlsruhe',
     author_email='contact@f-node.de',
     license='MIT License',
-    packages=['iota-dust-manager'],
+    packages=['iota_dust_manager'],
     install_requires=['iota-client>=0.2.0a8',                    
                       ],
 

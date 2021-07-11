@@ -1,2 +1,2 @@
 # iota-dust-manager
-A python package that manages you receiving dust addresses
+A thread safe python package that manages your receiving dust addresses
