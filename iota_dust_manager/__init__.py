@@ -4,7 +4,7 @@ iota-dust-manager
 A thread safe, stateless python package that manages your receiving dust address.
 """
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 __author__ = 'F-Node-Karlsruhe'
 
 
@@ -192,19 +192,48 @@ class DustManager:
 
         return self._dust_address
 
-    def pay_out(self, iota_address:str = None) -> str:
+    def pay_out(self, iota_address:str = None, amount:int = 0, all:bool = False) -> str:
         """Pays out the entire balance available above the ``working_balance`` to
         the specified iota address.
         Alternatively you can define a dedicated swipe address on creation to pay out
         the summoned dust transactions directly.
+        Returns the message_id of the payout transaction.
         :param iota_address: The iota address to which the funds shall be payed out.
+        :param amount: The payout amount. Gets refused if the ``working_balance`` is affected.
+                       Default: 0. If 0, the entire balance above the ``working_balance`` is payed out.
+        :param all: Default ``False``. When ``True`` the seed gets payed out completely,
+                    including the ``working_balance``.
         """
 
-        pay_out_amount = self._client.get_balance(self._seed) - self._working_balance
+        pay_out_amount = amount
+
+        if pay_out_amount > self.get_balance():
+
+            raise Exception('Payout not possible without affecting the dust working balance of %s iota' % self._working_balance)
+
+        if pay_out_amount == 0:
+
+            pay_out_amount = self.get_balance()
+
+        if all:
+
+            pay_out_amount = self.get_balance(all=True)
 
         output = {
             'address': iota_address,
             'amount': pay_out_amount
         }
-        self._client.message(seed=self._seed, outputs=[output])
+        return self._client.message(seed=self._seed, outputs=[output])
 
+
+    def get_balance(self, all:bool = False) -> int:
+        """Gives the balance of the dust manager which exceeds the ``working_balance``
+        :param all: Default ``False``. When ``True`` the balance includs the ``working_balance``.
+        """
+        balance = self._client.get_balance(self._seed)
+
+        if all:
+
+            return balance
+
+        return balance - self._working_balance
