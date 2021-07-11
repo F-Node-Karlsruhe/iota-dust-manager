@@ -4,7 +4,7 @@ iota-dust-manager
 A thread safe python package that manages your receiving dust addresses.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __author__ = 'F-Node-Karlsruhe'
 
 
@@ -33,6 +33,7 @@ class DustManager:
                           function.
     :param swipe_threshold: Specifies the amount of IOTAs which shall be swiped to the
                             ``swipe_address`` if the ``dust_address`` exceeds this amount.
+                            Default: 1_000_000
     """
 
     def __init__(self,
@@ -94,15 +95,13 @@ class DustManager:
 
         self._working_balance = IOTA_PER_DUST_TRANSACTION * self._number_of_dust_transactions
 
-        self._dust_counter = self._number_of_dust_transactions
+        self._dust_counter = self._number_of_dust_transactions - len(self._client.find_outputs(addresses=[self._dust_address]))
 
         if self._swipe_address is None:
 
             self._swipe_address = addresses[1][0]
 
         self._swipe_threshold = swipe_threshold
-
-        self._first_round = True
 
         self.__check_dust_enabled()
 
@@ -117,18 +116,7 @@ class DustManager:
             # rather be one too early than one too late
             if self._dust_counter > 1:
 
-                # only check dust allowance directly in first round
-                if self._first_round:
-
-                    address_balance_pair = self._client.get_address_balances([self._dust_address])[0]
-
-                    if address_balance_pair['dust_allowed']:
-
-                        return
-
-                else:
-
-                    return
+                return
 
             self.__refresh_dust()
 
@@ -174,7 +162,6 @@ class DustManager:
         # reset counter
         self._dust_counter = self._number_of_dust_transactions
 
-        self._first_round = False
 
  
 
