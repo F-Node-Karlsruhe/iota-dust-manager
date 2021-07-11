@@ -1,5 +1,5 @@
 # iota-dust-manager
-A thread safe python package that manages your receiving dust addresses
+A thread safe, stateless python package that manages your receiving dust address
 
 ## Install
 ```
@@ -19,7 +19,9 @@ dm = DustManager(seed = SEED)
 dust_address = dm.get_dust_address()
 
 # if you want to access the funds and transfer them
+
 YOUR_IOTA_ADDRESS = 'YOUR_IOTA_ADDRESS...'
+
 dm.pay_out('YOUR_IOTA_ADDRESS')
 ```
 
@@ -43,4 +45,16 @@ dm = DustManager(seed = SEED, swipe_address = YOUR_SWIPE_ADDRESS)
 # whenever you need to receive dust, just call this function
 dust_address = dm.get_dust_address()
 
+```
+Further you can specify the threshold above which the dust address gets swiped to the swipe address.  
+`1_000_000` is the default and minimum swipe threshold allowed if the swipe address has no dust allowance.  
+```python
+dm = DustManager(seed = SEED, swipe_address = YOUR_SWIPE_ADDRESS, swipe_threshold = 1_000_000)
+```
+
+### Use on the mainnet
+The default node is `https://api.hornet-1.testnet.chrysalis2.com` on the testnet.  
+If you want to use the mainnet, initialise the dust manager with a mainnet node like so:  
+```python
+dm = DustManager(seed = SEED, node = 'https://chrysalis-nodes.iota.org')
 ```
