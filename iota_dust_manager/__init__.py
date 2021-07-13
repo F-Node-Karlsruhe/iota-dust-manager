@@ -162,6 +162,8 @@ class DustManager:
         # send the dust balance to the dust address wit dust allowance
         message = self._client.message(
         seed=self._seed,
+        input_range_begin=0,
+        input_range_end=1,
         outputs=swipe_outputs,
         dust_allowance_outputs=[
             {
@@ -223,7 +225,13 @@ class DustManager:
             'address': iota_address,
             'amount': pay_out_amount
         }
-        return self._client.message(seed=self._seed, outputs=[output])
+        if all:
+            return self._client.message(seed=self._seed, outputs=[output])
+
+        return self._client.message(seed=self._seed,
+                                    input_range_begin=1,
+                                    input_range_end=2,
+                                    outputs=[output])
 
 
     def get_balance(self, all:bool = False) -> int:
