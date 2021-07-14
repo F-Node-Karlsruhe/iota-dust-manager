@@ -1,3 +1,4 @@
+[![Downloads](https://pepy.tech/badge/iota-dust-manager)](https://pepy.tech/project/iota-dust-manager)  
 # iota-dust-manager
 A thread safe, stateless python package that manages your receiving dust address
 
